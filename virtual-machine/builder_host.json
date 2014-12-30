@@ -1,24 +1,46 @@
 {
+  "_comment": "builders are used to build a virtual machine image for a given virtual machine provider.",
+  "_comment": "A single host may have many builders depending on which vm providers you want to use.",
   "builders": [
     {
+      "_comment": "Declare we're using the virtualbox-iso builder:",
+      "_comment": "https://www.packer.io/docs/builders/virtualbox-iso.html",
+      "type": "virtualbox-iso",
+      "_comment": "Packer deletes this directory as part of it's provisioning",
+                  "step, but still requires this.",
+      "output_directory": "output/packer-centos-7.0-x86_64-virtualbox-builder",
+
+      "_comment": ["A command to run on boot. This one Sends the tab key to the",
+                   "virtual machine once it boots, then downloads the kickstart",
+                   "configuration from our http directory.",
+
+                   "Kickstart is a tool to automate CentOS installations.",
+                   "http://www.centos.org/docs/5/html/Installation_Guide-en-US/ch-kickstart2.html"],
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
       ],
+      "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
       "boot_wait": "10s",
-      "disk_size": 40960,
+
       "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
       "guest_os_type": "RedHat_64",
+      "_comment": "Packer shares the contents of the http directory so the VM may download files",
       "http_directory": "http",
+
+      "_comment": "Packer is happy to download the *nix image for you.",
+      "_comment": "Make sure you've got the checksum right",
+      "iso_url": "{{user `mirror`}}/7.0.1406/isos/x86_64/CentOS-7.0-1406-x86_64-DVD.iso",
       "iso_checksum": "ee505335bcd4943ffc7e6e6e55e5aaa8da09710b6ceecda82a5619342f1d24d9",
       "iso_checksum_type": "sha256",
-      "iso_url": "{{user `mirror`}}/7.0.1406/isos/x86_64/CentOS-7.0-1406-x86_64-DVD.iso",
-      "output_directory": "output/packer-centos-7.0-x86_64-virtualbox-builder",
-      "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+
+
+      "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
-      "ssh_username": "vagrant",
       "ssh_wait_timeout": "10000s",
-      "type": "virtualbox-iso",
+
+      "_comment": "Set the VM's hardware defaults",
+      "disk_size": 40960,
       "vboxmanage": [
         [
           "modifyvm",
@@ -37,15 +59,15 @@
       "vm_name": "packer-centos-7.0-x86_64"
     }
   ],
-  "post-processors": [
-    {
-      "output": "output/{{.Provider}}_builder_host.box",
-      "type": "vagrant"
-    }
-  ],
+  "_comment": ["provisioners run on every built image to configure it further."],
   "provisioners": [
     {
+      "_comment": "Use the shell provisioner: https://www.packer.io/docs/provisioners/shell.html",
+      "type": "shell",
+      "_comment": "sudo as vagrant to execute the scripts",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "_comment": ["These scripts are nearly copy-pastes from Opscode's Bento",
+                   "https://github.com/opscode/bento"],
       "scripts": [
         "scripts/fix-slow-dns.sh",
         "scripts/sshd.sh",
@@ -53,10 +75,19 @@
         "scripts/docker.sh",
         "scripts/vagrant.sh",
         "scripts/cleanup.sh"
-      ],
-      "type": "shell"
+      ]
     }
   ],
+  "_comment": "Post-processors take a builder and convert it into another form",
+  "post-processors": [
+    {
+      "_comment": ["Create a vagrant box file from each of the builders with the",
+                   "builder type in the name"],
+      "type": "vagrant",
+      "output": "output/{{.Provider}}_builder_host.box"
+    }
+  ],
+  "_comment": "user-overridable variables that can be re-defined at build time",
   "variables": {
     "mirror": "http://mirrors.kernel.org/centos"
   }
