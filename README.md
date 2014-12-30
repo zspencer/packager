@@ -26,8 +26,9 @@ Vagrant boxes and docker images; but for now I think it'll primarily be for
 illustrative purposes. If I start using the images in my daily workflow I'll
 likely formalize them as outputs.
 
-For now, I'd recommend reading the [pull requests](pulls?q=is%3Apr+is%3Aclosed)
-and the [commit history](commits/master). I'll be storing my
+For now, I'd recommend reading the [pull
+requests](https://github.com/zspencer/packager/pulls?q=is%3Apr+is%3Aclosed)
+and the [commit history](https://github.com/zspencer/packager/commits/master). I'll be storing my
 stream-of-consciousness thoughts there.
 
 ## How Will We Meet These Goals?
