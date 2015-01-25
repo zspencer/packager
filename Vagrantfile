@@ -16,6 +16,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # symantic meaning.
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
+  config.trigger.after :up do
+    info "Restarting docker to give it access to our folders"
+    run_remote "service docker restart"
+  end
+
 
   # Configure virtualbox to give the machine more oomf
   config.vm.provider "virtualbox" do |vb|
