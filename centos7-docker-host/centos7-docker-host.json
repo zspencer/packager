@@ -2,11 +2,11 @@
   "builders": [
     {
       "type": "virtualbox-iso",
-      "output_directory": "output/packer-centos-7.0-x86_64-virtualbox-builder",
+      "output_directory": "output/virtualbox-builder-{{user `boxname`}}",
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
       ],
-      "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+      "shutdown_command": "echo 'vagrant' | sudo -S /sbin/halt -h -p",
       "boot_wait": "10s",
 
       "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
@@ -39,7 +39,7 @@
         ]
       ],
       "virtualbox_version_file": ".vbox_version",
-      "vm_name": "packer-centos-7.0-x86_64"
+      "vm_name": "{{user `boxname`}}"
     }
   ],
   "provisioners": [
@@ -59,10 +59,13 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "output": "output/{{.Provider}}_builder_host.box"
+      "output": "output/{{.Provider}}-{{user `boxname`}}.box"
     }
   ],
   "variables": {
-    "mirror": "http://mirrors.kernel.org/centos"
+    "boxname": "centos7-docker-host",
+    "mirror": "http://mirrors.kernel.org/centos",
+    "version": "",
+    "vagrant_cloud_token": "{{env `VAGRANT_CLOUD_TOKEN`}}"
   }
 }
