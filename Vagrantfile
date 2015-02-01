@@ -4,7 +4,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "builder_host"
+  config.vm.box = "zspencer/centos7-docker-host"
+  config.vm.box_version = "1.0.0"
   config.vm.network "private_network", ip: "192.168.42.50"
   config.ssh.forward_agent = true
 
@@ -15,12 +16,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Syncing the vagrant folder doesn't reveal any
   # symantic meaning.
   config.vm.synced_folder ".", "/vagrant", disabled: true
-
-  config.trigger.after :up do
-    info "Restarting docker to give it access to our folders"
-    run_remote "service docker restart"
-  end
-
 
   # Configure virtualbox to give the machine more oomf
   config.vm.provider "virtualbox" do |vb|
