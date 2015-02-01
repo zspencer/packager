@@ -19,6 +19,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # containers to access the files.
   config.vm.synced_folder ".", "/project"
 
+  # Restart docker after the vm comes up completely, ensuring Docker has access
+  # to our shared folders.
+  config.trigger.after :up do
+    info "Restarting docker to give it access to our folders"
+    run_remote "service docker restart"
+  end
+
   # I prefer to use a folder named "project" instead of one named "vagrant" as
   # the word "vagrant" doesn't convey much information.
   config.vm.synced_folder ".", "/vagrant", disabled: true
