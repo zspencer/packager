@@ -22,3 +22,26 @@ $ vagrant init builder_host # Creates a new Vagrantfile with the builder.
 $ vagrant up  # Starts the Vagrant machine
 $ vagrant ssh # Connect into the VM
 ```
+
+
+## Known Issues
+
+### Docker must be restarted before it may mount Virtualbox Shared folders
+
+At this time, when using Vagrant with Virtualbox shared folders, docker may need
+to be restarted before it will be able to see the shared folders.
+
+If you install the `vagrant-triggers` vagrant plugin, you can set up an "after
+start" trigger in your vagrantfile restart the docker service:
+
+```
+config.trigger.after :up do
+  info "Restarting docker to give it access to our folders"
+  run_remote "service docker restart"
+end
+```
+
+### Virtual Machine's guest additions don't match physical machines guest additions.
+
+I recommend using the `vagrant-vbguest` plugin to ensure the guest additions on
+your physical machine match the guest additions on the virtual machine.
