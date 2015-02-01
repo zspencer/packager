@@ -57,18 +57,10 @@
     }
   ],
   "post-processors": [
-    [
-      {
-        "type": "vagrant",
-        "output": "output/{{.Provider}}-{{user `boxname`}}.box"
-      },
-      {
-        "type": "vagrant-cloud",
-        "access_token": "{{user `vagrant_cloud_token`}}",
-        "box_tag": "zspencer/{{user `boxname` }}",
-        "version": "{{user `version`}}"
-      }
-    ]
+    {
+      "type": "vagrant",
+      "output": "output/{{.Provider}}-{{user `boxname`}}.box"
+    }
   ],
   "variables": {
     "boxname": "centos7-docker-host",
